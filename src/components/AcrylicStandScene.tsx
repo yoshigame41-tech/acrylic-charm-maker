@@ -15,6 +15,7 @@ type Props = {
   aspect: number; // width / height
   thickness: number;
   tint: number; // 0..1 edge tint strength
+  nameText?: string | undefined;
 };
 
 function Figure({ imageUrl, aspect, thickness, tint }: Props) {
@@ -135,7 +136,41 @@ function Figure({ imageUrl, aspect, thickness, tint }: Props) {
   );
 }
 
-function Base({ thickness }: { thickness: number }) {
+function useNameTexture(nameText?: string) {
+  return useMemo(() => {
+    const text = (nameText ?? "").trim();
+    if (!text || typeof document === "undefined") return null;
+    const w = 1024;
+    const h = 256;
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+    ctx.clearRect(0, 0, w, h);
+    let size = 150;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    do {
+      ctx.font = `600 ${size}px "Helvetica Neue", Helvetica, Arial, sans-serif`;
+      if (ctx.measureText(text).width <= w * 0.86) break;
+      size -= 6;
+    } while (size > 24);
+    ctx.shadowColor = "rgba(160, 235, 255, 0.9)";
+    ctx.shadowBlur = 28;
+    ctx.fillStyle = "#eaf9ff";
+    ctx.fillText(text, w / 2, h / 2);
+    ctx.shadowBlur = 0;
+    ctx.fillText(text, w / 2, h / 2);
+    const t = new THREE.CanvasTexture(canvas);
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.anisotropy = 8;
+    return t;
+  }, [nameText]);
+}
+
+function Base({ thickness, nameText }: { thickness: number; nameText?: string | undefined }) {
+  const nameTexture = useNameTexture(nameText);
   return (
     <group>
       <mesh position={[0, 0.09, 0]} castShadow receiveShadow>
@@ -158,6 +193,20 @@ function Base({ thickness }: { thickness: number }) {
         <boxGeometry args={[1.4, 0.01, thickness * 1.2]} />
         <meshBasicMaterial color="#0b1220" opacity={0.45} transparent />
       </mesh>
+
+      {/* 台座の名入れ（上面・手前側） */}
+      {nameTexture && (
+        <mesh position={[0, 0.181, 0.62]} rotation={[-Math.PI / 2, 0, 0]}>
+          <planeGeometry args={[1.7, 0.425]} />
+          <meshBasicMaterial
+            map={nameTexture}
+            transparent
+            depthWrite={false}
+            toneMapped={false}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
+      )}
     </group>
   );
 }
@@ -167,6 +216,7 @@ export default function AcrylicStandScene({
   aspect,
   thickness,
   tint,
+  nameText,
 }: Props) {
   return (
     <Canvas
@@ -192,7 +242,7 @@ export default function AcrylicStandScene({
         <Float speed={1.2} rotationIntensity={0.12} floatIntensity={0.18}>
           <group position={[0, -1.5, 0]}>
             <Figure imageUrl={imageUrl} aspect={aspect} thickness={thickness} tint={tint} />
-            <Base thickness={thickness} />
+            <Base thickness={thickness} nameText={nameText} />
           </group>
         </Float>
         <Environment resolution={256} frames={1}>
