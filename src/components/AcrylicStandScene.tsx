@@ -9,6 +9,7 @@ import {
 } from "@react-three/drei";
 import { Suspense, useMemo } from "react";
 import * as THREE from "three";
+import { buildSilhouetteShape } from "@/lib/silhouetteShape";
 
 type Props = {
   imageUrl: string;
@@ -132,7 +133,7 @@ function Figure({ imageUrl, aspect, thickness, tint }: Props) {
       {[1, -1].map((side) => (
         <mesh
           key={side}
-          position={[0, boardH / 2, side * (thickness / 2 + thickness * 0.18 + 0.006)]}
+          position={[0, artCenterY, side * (thickness / 2 + thickness * 0.18 + 0.006)]}
           rotation={[0, side === 1 ? 0 : Math.PI, 0]}
         >
           <planeGeometry args={[width, height]} />
