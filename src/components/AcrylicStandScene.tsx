@@ -15,7 +15,7 @@ type Props = {
   aspect: number; // width / height
   thickness: number;
   tint: number; // 0..1 edge tint strength
-  nameText?: string;
+  nameText?: string | undefined;
 };
 
 function Figure({ imageUrl, aspect, thickness, tint }: Props) {
@@ -169,7 +169,7 @@ function useNameTexture(nameText?: string) {
   }, [nameText]);
 }
 
-function Base({ thickness, nameText }: { thickness: number; nameText?: string }) {
+function Base({ thickness, nameText }: { thickness: number; nameText?: string | undefined }) {
   const nameTexture = useNameTexture(nameText);
   return (
     <group>
