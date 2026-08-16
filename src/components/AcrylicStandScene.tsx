@@ -122,7 +122,8 @@ function Figure({ imageUrl, aspect, thickness, tint }: Props) {
         >
           <planeGeometry args={[width, height]} />
           <meshBasicMaterial
-            map={texture}
+            map={side === 1 ? texture : (silhouette ?? texture)}
+            color={side === 1 ? "#ffffff" : "#ffffff"}
             transparent
             alphaTest={0.05}
             toneMapped={false}
