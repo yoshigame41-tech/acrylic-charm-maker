@@ -57,7 +57,9 @@ function Figure({ imageUrl, aspect, thickness, tint }: Props) {
     const img = texture.image as HTMLImageElement | undefined;
     if (!img) return null;
     try {
-      return buildSilhouetteShape(img, width, height, margin);
+      const r = buildSilhouetteShape(img, width, height, margin);
+      console.log('SIL', r && { centerY: r.centerY, boardH: r.boardH, boardW: r.boardW, pts: r.shape.getPoints(4).length });
+      return r;
     } catch {
       return null;
     }
