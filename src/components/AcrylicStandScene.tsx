@@ -20,7 +20,6 @@ type Props = {
 };
 
 function Figure({ imageUrl, aspect, thickness, tint }: Props) {
-  console.log("FIGURE render", imageUrl);
   const texture = useTexture(imageUrl);
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.anisotropy = 8;
@@ -58,9 +57,7 @@ function Figure({ imageUrl, aspect, thickness, tint }: Props) {
     const img = texture.image as HTMLImageElement | undefined;
     if (!img) return null;
     try {
-      const r = buildSilhouetteShape(img, width, height, margin);
-      console.log('SIL', r && { centerY: r.centerY, boardH: r.boardH, boardW: r.boardW, pts: r.shape.getPoints(4).length });
-      return r;
+      return buildSilhouetteShape(img, width, height, margin);
     } catch {
       return null;
     }
@@ -236,7 +233,6 @@ export default function AcrylicStandScene({
   tint,
   nameText,
 }: Props) {
-  console.log('SCENE render', imageUrl, aspect);
   return (
     <Canvas
       shadows
