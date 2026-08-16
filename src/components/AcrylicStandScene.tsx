@@ -22,6 +22,27 @@ function Figure({ imageUrl, aspect, thickness, tint }: Props) {
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.anisotropy = 8;
 
+  // 裏面用: 表のシルエットを真っ白に塗りつぶしたテクスチャ
+  const silhouette = useMemo(() => {
+    const img = texture.image as HTMLImageElement | HTMLCanvasElement | undefined;
+    if (!img || typeof document === "undefined") return null;
+    const w = (img as HTMLImageElement).width || 512;
+    const h = (img as HTMLImageElement).height || 512;
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+    ctx.drawImage(img as CanvasImageSource, 0, 0, w, h);
+    ctx.globalCompositeOperation = "source-in";
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, w, h);
+    const t = new THREE.CanvasTexture(canvas);
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.anisotropy = 8;
+    return t;
+  }, [texture]);
+
   const height = 2.6;
   const width = height * aspect;
   const margin = 0.16;
@@ -101,7 +122,8 @@ function Figure({ imageUrl, aspect, thickness, tint }: Props) {
         >
           <planeGeometry args={[width, height]} />
           <meshBasicMaterial
-            map={texture}
+            map={side === 1 ? texture : (silhouette ?? texture)}
+            color={side === 1 ? "#ffffff" : "#ffffff"}
             transparent
             alphaTest={0.05}
             toneMapped={false}
