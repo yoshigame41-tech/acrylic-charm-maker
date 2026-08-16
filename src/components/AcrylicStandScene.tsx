@@ -174,7 +174,6 @@ export default function AcrylicStandScene({
           </group>
         </Float>
         <Environment resolution={256} frames={1}>
-          <color attach="background" args={["#0a0f1c"]} />
           <Lightformer intensity={6} position={[0, 4, 3]} scale={[8, 4, 1]} color="#eaf6ff" />
           <Lightformer
             intensity={4}
