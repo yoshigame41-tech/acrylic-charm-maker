@@ -20,6 +20,7 @@ type Props = {
 };
 
 function Figure({ imageUrl, aspect, thickness, tint }: Props) {
+  console.log("FIGURE render", imageUrl);
   const texture = useTexture(imageUrl);
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.anisotropy = 8;
