@@ -51,7 +51,18 @@ function Figure({ imageUrl, aspect, thickness, tint }: Props) {
   const boardH = height + margin * 2;
   const tabH = 0.34;
 
-  const shape = useMemo(() => {
+  // シルエットに沿った輪郭（外側に余白を付けた形）
+  const silhouetteOutline = useMemo(() => {
+    const img = texture.image as HTMLImageElement | undefined;
+    if (!img) return null;
+    try {
+      return buildSilhouetteShape(img, width, height, margin);
+    } catch {
+      return null;
+    }
+  }, [texture, width, height, margin]);
+
+  const fallbackShape = useMemo(() => {
     const s = new THREE.Shape();
     const w = boardW / 2;
     const h = boardH;
@@ -67,6 +78,9 @@ function Figure({ imageUrl, aspect, thickness, tint }: Props) {
     s.quadraticCurveTo(-w, 0, -w + r, 0);
     return s;
   }, [boardW, boardH]);
+
+  const shape = silhouetteOutline?.shape ?? fallbackShape;
+  const artCenterY = silhouetteOutline?.centerY ?? boardH / 2;
 
   const geometry = useMemo(() => {
     const g = new THREE.ExtrudeGeometry(shape, {
