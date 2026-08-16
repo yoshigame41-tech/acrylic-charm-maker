@@ -153,10 +153,10 @@ export default function AcrylicStandScene({
       camera={{ position: [0, 2.2, 6.2], fov: 40 }}
       gl={{ antialias: true, alpha: true }}
     >
-      <color attach="background" args={["#080b14"]} />
-      <fog attach="fog" args={["#080b14", 9, 20]} />
+      <color attach="background" args={["#151f38"]} />
+      <fog attach="fog" args={["#151f38", 11, 26]} />
 
-      <ambientLight intensity={0.4} />
+      <ambientLight intensity={0.8} />
       <directionalLight
         position={[4, 6, 4]}
         intensity={2.2}
