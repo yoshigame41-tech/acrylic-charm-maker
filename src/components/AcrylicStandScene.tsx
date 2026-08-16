@@ -9,6 +9,7 @@ import {
 } from "@react-three/drei";
 import { Suspense, useMemo } from "react";
 import * as THREE from "three";
+import { buildSilhouetteShape } from "@/lib/silhouetteShape";
 
 type Props = {
   imageUrl: string;
@@ -51,7 +52,18 @@ function Figure({ imageUrl, aspect, thickness, tint }: Props) {
   const boardH = height + margin * 2;
   const tabH = 0.34;
 
-  const shape = useMemo(() => {
+  // シルエットに沿った輪郭（外側に余白を付けた形）
+  const silhouetteOutline = useMemo(() => {
+    const img = texture.image as HTMLImageElement | undefined;
+    if (!img) return null;
+    try {
+      return buildSilhouetteShape(img, width, height, margin);
+    } catch {
+      return null;
+    }
+  }, [texture, width, height, margin]);
+
+  const fallbackShape = useMemo(() => {
     const s = new THREE.Shape();
     const w = boardW / 2;
     const h = boardH;
@@ -67,6 +79,9 @@ function Figure({ imageUrl, aspect, thickness, tint }: Props) {
     s.quadraticCurveTo(-w, 0, -w + r, 0);
     return s;
   }, [boardW, boardH]);
+
+  const shape = silhouetteOutline?.shape ?? fallbackShape;
+  const artCenterY = silhouetteOutline?.centerY ?? boardH / 2;
 
   const geometry = useMemo(() => {
     const g = new THREE.ExtrudeGeometry(shape, {
@@ -118,7 +133,7 @@ function Figure({ imageUrl, aspect, thickness, tint }: Props) {
       {[1, -1].map((side) => (
         <mesh
           key={side}
-          position={[0, boardH / 2, side * (thickness / 2 + thickness * 0.18 + 0.006)]}
+          position={[0, artCenterY, side * (thickness / 2 + thickness * 0.18 + 0.006)]}
           rotation={[0, side === 1 ? 0 : Math.PI, 0]}
         >
           <planeGeometry args={[width, height]} />
