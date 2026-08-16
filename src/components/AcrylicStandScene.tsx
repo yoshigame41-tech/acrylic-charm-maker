@@ -236,6 +236,7 @@ export default function AcrylicStandScene({
   tint,
   nameText,
 }: Props) {
+  console.log('SCENE render', imageUrl, aspect);
   return (
     <Canvas
       shadows
