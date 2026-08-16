@@ -62,7 +62,21 @@ function Figure({ imageUrl, aspect, thickness }: Omit<Props, "tint">) {
   return (
     <group position={[0, tabH * 0.5, 0]}>
       {/* Acrylic board */}
-      <mesh geometry={geometry} castShadow><meshBasicMaterial wireframe color="#00ff00" /></mesh>
+      <mesh geometry={geometry} castShadow>
+        <meshPhysicalMaterial
+          transmission={1}
+          thickness={thickness * 5}
+          roughness={0.04}
+          ior={1.49}
+          clearcoat={1}
+          clearcoatRoughness={0.04}
+          transparent
+          opacity={0.9}
+          attenuationDistance={3}
+          attenuationColor={"#cdeeff"}
+          specularIntensity={1}
+        />
+      </mesh>
 
       {/* Printed artwork, front and back */}
       {[1, -1].map((side) => (
@@ -74,7 +88,6 @@ function Figure({ imageUrl, aspect, thickness }: Omit<Props, "tint">) {
           <planeGeometry args={[width, height]} />
           <meshBasicMaterial
             map={texture}
-            color="#ff0000"
             transparent
             alphaTest={0.05}
             toneMapped={false}
@@ -124,7 +137,7 @@ export default function AcrylicStandScene({
       camera={{ position: [0, 2.2, 6.2], fov: 40 }}
       gl={{ antialias: true, alpha: true }}
     >
-      <color attach="background" args={["#ff00ff"]} />
+      <color attach="background" args={["#080b14"]} />
       <fog attach="fog" args={["#080b14", 9, 20]} />
 
       <ambientLight intensity={0.4} />
