@@ -17,7 +17,7 @@ type Props = {
   tint: number; // 0..1 edge tint strength
 };
 
-function Figure({ imageUrl, aspect, thickness }: Omit<Props, "tint">) {
+function Figure({ imageUrl, aspect, thickness, tint }: Props) {
   const texture = useTexture(imageUrl);
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.anisotropy = 8;
@@ -64,17 +64,31 @@ function Figure({ imageUrl, aspect, thickness }: Omit<Props, "tint">) {
       {/* Acrylic board */}
       <mesh geometry={geometry} castShadow>
         <meshPhysicalMaterial
-          transmission={1}
+          transmission={0.94}
           thickness={thickness * 5}
-          roughness={0.04}
-          ior={1.49}
+          roughness={0.05}
+          metalness={0}
+          ior={1.5}
           clearcoat={1}
-          clearcoatRoughness={0.04}
+          clearcoatRoughness={0.03}
           transparent
-          opacity={0.9}
-          attenuationDistance={3}
-          attenuationColor={"#cdeeff"}
+          opacity={0.85}
+          envMapIntensity={2.4}
+          attenuationDistance={2}
+          attenuationColor={"#bfe6ff"}
           specularIntensity={1}
+        />
+      </mesh>
+
+      {/* Glowing acrylic edge */}
+      <mesh geometry={geometry} scale={[1.004, 1.002, 1.02]}>
+        <meshBasicMaterial
+          color="#a8ecff"
+          transparent
+          opacity={0.1 + 0.14 * tint}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+          side={THREE.BackSide}
         />
       </mesh>
 
@@ -105,13 +119,15 @@ function Base({ thickness }: { thickness: number }) {
       <mesh position={[0, 0.09, 0]} castShadow receiveShadow>
         <cylinderGeometry args={[1.15, 1.25, 0.18, 64]} />
         <meshPhysicalMaterial
-          transmission={1}
-          thickness={0.9}
-          roughness={0.06}
-          ior={1.49}
+          transmission={0.92}
+          thickness={0.7}
+          roughness={0.07}
+          ior={1.5}
           clearcoat={1}
           transparent
-          attenuationDistance={1.6}
+          opacity={0.85}
+          envMapIntensity={2.4}
+          attenuationDistance={1.4}
           attenuationColor={"#bfe9ff"}
         />
       </mesh>
@@ -153,7 +169,7 @@ export default function AcrylicStandScene({
       <Suspense fallback={null}>
         <Float speed={1.2} rotationIntensity={0.12} floatIntensity={0.18}>
           <group position={[0, -1.5, 0]}>
-            <Figure imageUrl={imageUrl} aspect={aspect} thickness={thickness} />
+            <Figure imageUrl={imageUrl} aspect={aspect} thickness={thickness} tint={tint} />
             <Base thickness={thickness} />
           </group>
         </Float>
@@ -175,6 +191,20 @@ export default function AcrylicStandScene({
             color="#f0abfc"
           />
           <Lightformer intensity={2} position={[0, -3, 0]} scale={[8, 8, 1]} color="#94a3b8" />
+          <Lightformer
+            intensity={8}
+            position={[-2, 2, 5]}
+            rotation-z={Math.PI / 5}
+            scale={[0.6, 8, 1]}
+            color="#ffffff"
+          />
+          <Lightformer
+            intensity={5}
+            position={[2.5, -1, 5]}
+            rotation-z={-Math.PI / 6}
+            scale={[0.35, 6, 1]}
+            color="#bae6fd"
+          />
         </Environment>
       </Suspense>
 
