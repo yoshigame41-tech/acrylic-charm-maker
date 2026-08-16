@@ -3,6 +3,7 @@ import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react"
 import { Upload, Sparkles, RotateCcw, ImageIcon, Loader2 } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { removeBackground, loadRaw, type ProcessedImage } from "@/lib/removeBackground";
 
@@ -37,6 +38,7 @@ function Index() {
   const [tolerance, setTolerance] = useState(14);
   const [thickness, setThickness] = useState(0.12);
   const [glow, setGlow] = useState(0.6);
+  const [nameText, setNameText] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [mounted, setMounted] = useState(false);
@@ -183,6 +185,21 @@ function Index() {
                   onValueChange={(v) => setGlow(v[0] ?? 0.6)}
                 />
               </Control>
+
+              <div>
+                <div className="mb-2 flex items-center justify-between text-xs">
+                  <span className="font-medium">台座の名入れ</span>
+                  <span className="text-muted-foreground tabular-nums">
+                    {nameText.length}/20
+                  </span>
+                </div>
+                <Input
+                  value={nameText}
+                  maxLength={20}
+                  placeholder="名前やメッセージを入力"
+                  onChange={(e) => setNameText(e.target.value)}
+                />
+              </div>
             </div>
 
             {image && (
@@ -229,6 +246,7 @@ function Index() {
                   aspect={aspect}
                   thickness={thickness}
                   tint={glow}
+                  nameText={nameText}
                 />
               </Suspense>
             ) : (
